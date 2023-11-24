@@ -1,0 +1,71 @@
+plugins {
+    id 'java'
+    id "com.google.protobuf" version "0.9.0"
+    id 'org.springframework.boot' version '2.7.17'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation group: 'com.google.protobuf', name: 'protobuf-java', version: '3.25.1'
+//    implementation group: 'io.grpc', name: 'grpc-netty', version: '1.59.0'
+    implementation group: 'io.grpc', name: 'grpc-protobuf', version: '1.58.0'
+    implementation group: 'io.grpc', name: 'grpc-stub', version: '1.58.0'
+//    implementation group: 'javax.activation', name: 'javax.activation-api', version: '1.2.0'
+    // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.33'
+
+    implementation 'javax.annotation:javax.annotation-api:1.3.2'
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.1.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    // https://mvnrepository.com/artifact/net.devh/grpc-spring-boot-starter
+    implementation group: 'net.devh', name: 'grpc-spring-boot-starter', version: '2.15.0.RELEASE'
+
+    // https://mvnrepository.com/artifact/com.googlecode.protobuf-java-format/protobuf-java-format
+    implementation group: 'com.googlecode.protobuf-java-format', name: 'protobuf-java-format', version: '1.4'
+
+    // https://mvnrepository.com/artifact/org.modelmapper/modelmapper
+    implementation group: 'org.modelmapper', name: 'modelmapper', version: '3.2.0'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+
+
+
+}
+protobuf {
+    protoc {
+        // Download from repositories
+        artifact = 'com.google.protobuf:protoc:3.25.1'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.58.0'
+        }
+    }
+
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {
+//                option 'enable_deprecated=false'
+            }
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
