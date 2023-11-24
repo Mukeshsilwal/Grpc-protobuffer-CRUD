@@ -7,7 +7,9 @@ import org.example.UserServiceGrpc;
 import org.example.entity.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -34,13 +36,20 @@ public class MyServerImpl extends UserServiceGrpc.UserServiceImplBase {
 
     }
 
+    @Transactional
     @Override
     public void createUser(UserOuterClass.User request, StreamObserver<UserOuterClass.User> responseObserver) {
         super.createUser(request, responseObserver);
-        UserEntity user=toUserEntity(request);
-        saveIntoDatabase(user);
-        responseObserver.onNext(request);
-        responseObserver.onCompleted();
+        try {
+            UserEntity user = toUserEntity(request);
+            saveIntoDatabase(user);
+            responseObserver.onNext(request);
+            responseObserver.onCompleted();
+        }
+        catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            throw new RuntimeException("Error while processing :"+e);
+        }
     }
 
     @Override
